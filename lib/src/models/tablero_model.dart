@@ -1,5 +1,5 @@
 class Tablero {
-  List<List<String>> tablero;
+  List<String> celdas;
 
-  Tablero({this.tablero});
+  Tablero({this.celdas});
 }
