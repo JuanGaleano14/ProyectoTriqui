@@ -1,30 +1,39 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_app_prueba/src/models/tablero_model.dart';
 import 'package:flutter_app_prueba/src/models/turno_model.dart';
 import 'package:flutter_app_prueba/src/view/home/main_home.dart';
 import 'package:google_fonts/google_fonts.dart';
-
+import 'package:pedantic/pedantic.dart';
 
 class MyHomePage extends StatefulWidget {
+  final bool existeBot;
+
+  MyHomePage(this.existeBot);
+
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _MyHomePageState createState() => _MyHomePageState(existeBot);
 }
 
 //Diseño de tablero
 class _MyHomePageState extends State<MyHomePage> {
-  bool ganador;
+  bool existeBot;
+
+  _MyHomePageState(this.existeBot);
 
   //Jugador Uno es la figura O
   final turnoJugadorUno = Turno(estado: true);
 
-  //Variable para mostrar al tap la figura X/O.
+  //Variable para mostrar al tap la figura X/O. Inicializar el tablero vacío.
   final mostrarEquisCirculo =
-  Tablero(celdas: ['', '', '', '', '', '', '', '', '']);
+      Tablero(celdas: ['', '', '', '', '', '', '', '', '']);
 
-  var styleTextLabels = TextStyle(color: Colors.white, fontSize: 18);
   int jugador1Score = 0;
   int jugador2Score = 0;
   int celdasLlenadas = 0;
+  bool existeGanador = false;
+  bool existeEmpate = false;
 
   //Diseño de letras byGoogleFonts
   static var myNewFont = GoogleFonts.pressStart2P(
@@ -32,10 +41,13 @@ class _MyHomePageState extends State<MyHomePage> {
   static var myNewFontButton = GoogleFonts.pressStart2P(
       textStyle: TextStyle(color: Colors.blueAccent, letterSpacing: 1));
   static var myNewFontWhite = GoogleFonts.pressStart2P(
-      textStyle: TextStyle(color: Colors.white, letterSpacing: -3, fontSize: 14));
+      textStyle:
+          TextStyle(color: Colors.white, letterSpacing: -3, fontSize: 14));
   static var myNewFontWhiteTablero = GoogleFonts.pressStart2P(
-      textStyle: TextStyle(color: Colors.white, letterSpacing: -3, fontSize: 25));
+      textStyle:
+          TextStyle(color: Colors.white, letterSpacing: -3, fontSize: 25));
 
+  //Diseño de pantalla
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,7 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          "Jugador 1 ( O )",
+                          'Jugador 1 ( O )',
                           style: myNewFontWhite,
                         ),
                         Padding(
@@ -72,7 +84,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          "Jugador 2 ( X )",
+                          'Jugador 2 ( X )',
                           style: myNewFontWhite,
                         ),
                         Padding(
@@ -92,9 +104,11 @@ class _MyHomePageState extends State<MyHomePage> {
           Expanded(
             flex: 4, //Tamaño de tablero
             child: GridView.builder(
+                //Cuadricula
                 itemCount: 9, //Cantidad de celdas
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3), //Cuadro de celdas 3x3
+                    crossAxisCount: 3 //Cuadro de celdas 3x3
+                    ),
                 itemBuilder: (BuildContext context, int index) {
                   return GestureDetector(
                     onTap: () {
@@ -119,8 +133,13 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Center(
                 child: Column(
                   children: <Widget>[
-                    Text('T R I Q U I', style: myNewFontWhite,),
-                    SizedBox(height: 60,),
+                    Text(
+                      'T R I Q U I',
+                      style: myNewFontWhite,
+                    ),
+                    SizedBox(
+                      height: 60,
+                    ),
                     //Text('JPGS - AFPE', style: myNewFontWhite,)
                   ],
                 ),
@@ -137,25 +156,39 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       //Si es el turno del jugador y la casilla está vacía
       if (turnoJugadorUno.estado &&
+          existeBot &&
           mostrarEquisCirculo.celdas[indexCelda] == '') {
         mostrarEquisCirculo.celdas[indexCelda] = 'O';
         //Aumenta contador de celdas ocupadas
         celdasLlenadas += 1;
+        _validarGanador(mostrarEquisCirculo);
+        bot();
+      } else if (turnoJugadorUno.estado &&
+          mostrarEquisCirculo.celdas[indexCelda] == '') {
+        mostrarEquisCirculo.celdas[indexCelda] = 'O';
+        //Aumenta contador de celdas ocupadas
+        celdasLlenadas += 1;
+        //Verificar si hay un ganador
+        _validarGanador(mostrarEquisCirculo);
       } else if (!turnoJugadorUno.estado &&
           mostrarEquisCirculo.celdas[indexCelda] == '') {
         mostrarEquisCirculo.celdas[indexCelda] = 'X';
         //Aumenta contador de celdas ocupadas
         celdasLlenadas += 1;
+        //Verificar si hay un ganador
+        _validarGanador(mostrarEquisCirculo);
       }
 
       //Cambia el turno
-      turnoJugadorUno.estado = !turnoJugadorUno.estado;
-      //Verificar si hay un ganador
-      _validarGanador(mostrarEquisCirculo);
+      if (existeBot && (existeGanador || existeEmpate)) {
+        turnoJugadorUno.estado = true;
+      } else {
+        turnoJugadorUno.estado = !turnoJugadorUno.estado;
+      }
     });
   }
 
-  _validarGanador(Tablero tablero) {
+  void _validarGanador(Tablero tablero) {
     // checks 1st row
     if (tablero.celdas[0] == tablero.celdas[1] &&
         tablero.celdas[0] == tablero.celdas[2] &&
@@ -198,27 +231,25 @@ class _MyHomePageState extends State<MyHomePage> {
       _mostrarVentanaGanador(tablero.celdas[2]);
     }
 
-    // checks diagonal
+    // checks diagonal der to izq
     if (tablero.celdas[6] == tablero.celdas[4] &&
         tablero.celdas[6] == tablero.celdas[2] &&
         tablero.celdas[6] != '') {
       _mostrarVentanaGanador(tablero.celdas[6]);
     }
 
-    // checks diagonal
+    // checks diagonal izq to der
     if (tablero.celdas[0] == tablero.celdas[4] &&
         tablero.celdas[0] == tablero.celdas[8] &&
         tablero.celdas[0] != '') {
       _mostrarVentanaGanador(tablero.celdas[0]);
-    }
-
-    if (celdasLlenadas == 9) {
+    } else if (celdasLlenadas == 9 && existeGanador != true) {
       _mostrarVentanaEmpate();
     }
   }
 
   void _mostrarVentanaGanador(String figuraGanador) {
-    String jugadorGanador = figuraGanador == 'O' ? 'Jugador 1' : 'Jugador 2';
+    var jugadorGanador = figuraGanador == 'O' ? 'Jugador 1' : 'Jugador 2';
     showDialog(
         barrierDismissible: false,
         //Bloquear el tap afuera de la caja de texto emergente.
@@ -228,15 +259,14 @@ class _MyHomePageState extends State<MyHomePage> {
             title: Text('STOP, Ya ha ganado el ' + jugadorGanador),
             titleTextStyle: myNewFont,
             actions: <Widget>[
-              FlatButton(
-                child: Text('¡Continuar jugando!', style: myNewFontButton),
+              TextButton(
                 onPressed: () {
                   _limpiarTablero();
                   Navigator.of(context).pop(); //Regresar al board view
                 },
+                child: Text('¡Continuar jugando!', style: myNewFontButton),
               ),
-              FlatButton(
-                child: Text('Salir', style: myNewFontButton),
+              TextButton(
                 onPressed: () {
                   _limpiarTablero();
                   Navigator.push(
@@ -245,6 +275,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         builder: (context) => IntroScreen()), // Ruta destino
                   );
                 },
+                child: Text('Salir', style: myNewFontButton),
               )
             ],
           );
@@ -255,6 +286,7 @@ class _MyHomePageState extends State<MyHomePage> {
     } else if (jugadorGanador == 'Jugador 2') {
       jugador2Score += 1;
     }
+    existeGanador = true;
   }
 
   void _mostrarVentanaEmpate() {
@@ -267,15 +299,14 @@ class _MyHomePageState extends State<MyHomePage> {
             title: Text('¡Lastima! ha sido un empate'),
             titleTextStyle: myNewFont,
             actions: <Widget>[
-              FlatButton(
-                child: Text('¡Continuar jugando!', style: myNewFontButton),
+              TextButton(
                 onPressed: () {
                   _limpiarTablero();
                   Navigator.of(context).pop(); //Regresar al board view
                 },
+                child: Text('¡Continuar jugando!', style: myNewFontButton),
               ),
-              FlatButton(
-                child: Text('Salir', style: myNewFontButton),
+              TextButton(
                 onPressed: () {
                   _limpiarTablero();
                   Navigator.push(
@@ -284,20 +315,47 @@ class _MyHomePageState extends State<MyHomePage> {
                         builder: (context) => IntroScreen()), // Ruta destino
                   );
                 },
+                child: Text('Salir', style: myNewFontButton),
               )
             ],
           );
         });
+
+    existeEmpate = true;
   }
 
   void _limpiarTablero() {
     setState(() {
       //De acuerdo al cambio de estado se re construye el build.
-      for (int i = 0; i < 9; i++) {
+      for (var i = 0; i < 9; i++) {
         mostrarEquisCirculo.celdas[i] = '';
       }
     });
 
     celdasLlenadas = 0;
+    existeGanador = false;
+  }
+
+  void bot() {
+    setState(() {
+      var move = Random().nextInt(9);
+      var isPlayed = false;
+      while (!isPlayed) {
+        if (mostrarEquisCirculo.celdas[move] == '' &&
+            mostrarEquisCirculo.celdas[move] != 'X' &&
+            existeGanador == false) {
+          mostrarEquisCirculo.celdas[move] = 'X';
+          celdasLlenadas += 1;
+          _validarGanador(mostrarEquisCirculo);
+          //Cambia el turno existeBot
+          turnoJugadorUno.estado = !turnoJugadorUno.estado;
+          isPlayed = true;
+        } else if (celdasLlenadas == 9 || existeGanador) {
+          isPlayed = true;
+        } else {
+          move = Random().nextInt(9);
+        }
+      }
+    });
   }
 }

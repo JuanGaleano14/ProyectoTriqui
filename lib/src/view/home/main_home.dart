@@ -1,13 +1,11 @@
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'tableroview.dart';
-import 'package:flutter/services.dart';
+import '../tablero/tableroview.dart';
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: IntroScreen(),
@@ -40,20 +38,20 @@ class _IntroScreenState extends State<IntroScreen>
               children: <Widget>[
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.only(top: 120.0),
+                    padding: const EdgeInsets.only(top: 80.0),
                     child: Container(
                       child: Text(
-                        "3 EN LÍNEA",
+                        '3 EN LÍNEA',
                         style: myNewFontWhite.copyWith(fontSize: 30),
                       ),
                     ),
                   ),
                 ),
                 Expanded(
-                  flex: 1,
+                  flex: 2,
                   child: Container(
                     child: AvatarGlow(
-                      endRadius: 180,
+                      endRadius: 150,
                       duration: Duration(seconds: 2),
                       glowColor: Colors.white,
                       repeat: true,
@@ -67,6 +65,7 @@ class _IntroScreenState extends State<IntroScreen>
                             shape: BoxShape.circle),
                         child: CircleAvatar(
                           backgroundColor: Colors.blue,
+                          radius: 80.0,
                           child: Container(
                             child: Image.asset(
                               'lib/src/images/mainlogo.png',
@@ -74,7 +73,6 @@ class _IntroScreenState extends State<IntroScreen>
                               fit: BoxFit.scaleDown,
                             ),
                           ),
-                          radius: 80.0,
                         ),
                       ),
                     ),
@@ -82,10 +80,10 @@ class _IntroScreenState extends State<IntroScreen>
                 ),
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.only(top: 80.0),
+                    padding: const EdgeInsets.only(top: 30.0),
                     child: Container(
                       child: Text(
-                        "T R I Q U I",
+                        'T R I Q U I',
                         style: myNewFontWhite.copyWith(fontSize: 20),
                       ),
                     ),
@@ -95,7 +93,31 @@ class _IntroScreenState extends State<IntroScreen>
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => MyHomePage()),
+                      MaterialPageRoute(builder: (context) => MyHomePage(true)),
+                    );
+                  },
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 40, right: 40, bottom: 10),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: Container(
+                        padding: EdgeInsets.all(30),
+                        color: Colors.white,
+                        child: Center(
+                          child: Text(
+                            '1 JUGADOR',
+                            style: myNewFont,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => MyHomePage(false)),
                     );
                   },
                   child: Padding(
@@ -107,7 +129,7 @@ class _IntroScreenState extends State<IntroScreen>
                         color: Colors.white,
                         child: Center(
                           child: Text(
-                            'INICIAR PARTIDA',
+                            '2 JUGADORES',
                             style: myNewFont,
                           ),
                         ),
