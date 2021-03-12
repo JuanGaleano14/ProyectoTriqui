@@ -112,7 +112,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 itemBuilder: (BuildContext context, int index) {
                   return GestureDetector(
                     onTap: () {
-                      _marcarCasilla(index);
+                      marcarCasilla(index);
                     }, //tap
                     child: Container(
                       decoration: BoxDecoration(
@@ -151,7 +151,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  void _marcarCasilla(int indexCelda) {
+  void marcarCasilla(int indexCelda) {
     //Se tiene en cuenta el estado del _MyHomePageState
     setState(() {
       //Si es el turno del jugador y la casilla está vacía
@@ -161,7 +161,7 @@ class _MyHomePageState extends State<MyHomePage> {
         mostrarEquisCirculo.celdas[indexCelda] = 'O';
         //Aumenta contador de celdas ocupadas
         celdasLlenadas += 1;
-        _validarGanador(mostrarEquisCirculo);
+        validarGanador(mostrarEquisCirculo);
         bot();
       } else if (turnoJugadorUno.estado &&
           mostrarEquisCirculo.celdas[indexCelda] == '') {
@@ -169,14 +169,14 @@ class _MyHomePageState extends State<MyHomePage> {
         //Aumenta contador de celdas ocupadas
         celdasLlenadas += 1;
         //Verificar si hay un ganador
-        _validarGanador(mostrarEquisCirculo);
+        validarGanador(mostrarEquisCirculo);
       } else if (!turnoJugadorUno.estado &&
           mostrarEquisCirculo.celdas[indexCelda] == '') {
         mostrarEquisCirculo.celdas[indexCelda] = 'X';
         //Aumenta contador de celdas ocupadas
         celdasLlenadas += 1;
         //Verificar si hay un ganador
-        _validarGanador(mostrarEquisCirculo);
+        validarGanador(mostrarEquisCirculo);
       }
 
       //Cambia el turno
@@ -188,67 +188,67 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void _validarGanador(Tablero tablero) {
+  void validarGanador(Tablero tablero) {
     // checks 1st row
     if (tablero.celdas[0] == tablero.celdas[1] &&
         tablero.celdas[0] == tablero.celdas[2] &&
         tablero.celdas[0] != '') {
-      _mostrarVentanaGanador(tablero.celdas[0]);
+      mostrarVentanaGanador(tablero.celdas[0]);
     }
 
     // checks 2nd row
     if (tablero.celdas[3] == tablero.celdas[4] &&
         tablero.celdas[3] == tablero.celdas[5] &&
         tablero.celdas[3] != '') {
-      _mostrarVentanaGanador(tablero.celdas[3]);
+      mostrarVentanaGanador(tablero.celdas[3]);
     }
 
     // checks 3rd row
     if (tablero.celdas[6] == tablero.celdas[7] &&
         tablero.celdas[6] == tablero.celdas[8] &&
         tablero.celdas[6] != '') {
-      _mostrarVentanaGanador(tablero.celdas[6]);
+      mostrarVentanaGanador(tablero.celdas[6]);
     }
 
     // checks 1st column
     if (tablero.celdas[0] == tablero.celdas[3] &&
         tablero.celdas[0] == tablero.celdas[6] &&
         tablero.celdas[0] != '') {
-      _mostrarVentanaGanador(tablero.celdas[0]);
+      mostrarVentanaGanador(tablero.celdas[0]);
     }
 
     // checks 2nd column
     if (tablero.celdas[1] == tablero.celdas[4] &&
         tablero.celdas[1] == tablero.celdas[7] &&
         tablero.celdas[1] != '') {
-      _mostrarVentanaGanador(tablero.celdas[1]);
+      mostrarVentanaGanador(tablero.celdas[1]);
     }
 
     // checks 3rd column
     if (tablero.celdas[2] == tablero.celdas[5] &&
         tablero.celdas[2] == tablero.celdas[8] &&
         tablero.celdas[2] != '') {
-      _mostrarVentanaGanador(tablero.celdas[2]);
+      mostrarVentanaGanador(tablero.celdas[2]);
     }
 
     // checks diagonal der to izq
     if (tablero.celdas[6] == tablero.celdas[4] &&
         tablero.celdas[6] == tablero.celdas[2] &&
         tablero.celdas[6] != '') {
-      _mostrarVentanaGanador(tablero.celdas[6]);
+      mostrarVentanaGanador(tablero.celdas[6]);
     }
 
     // checks diagonal izq to der
     if (tablero.celdas[0] == tablero.celdas[4] &&
         tablero.celdas[0] == tablero.celdas[8] &&
         tablero.celdas[0] != '') {
-      _mostrarVentanaGanador(tablero.celdas[0]);
+      mostrarVentanaGanador(tablero.celdas[0]);
     } else if (celdasLlenadas == 9 && existeGanador != true) {
-      _mostrarVentanaEmpate();
+      mostrarVentanaEmpate();
     }
   }
 
-  void _mostrarVentanaGanador(String figuraGanador) {
+  void mostrarVentanaGanador(String figuraGanador) {
     var jugadorGanador = figuraGanador == 'O' ? 'Jugador 1' : 'Jugador 2';
     showDialog(
         barrierDismissible: false,
@@ -261,14 +261,14 @@ class _MyHomePageState extends State<MyHomePage> {
             actions: <Widget>[
               TextButton(
                 onPressed: () {
-                  _limpiarTablero();
+                  limpiarTablero();
                   Navigator.of(context).pop(); //Regresar al board view
                 },
                 child: Text('¡Continuar jugando!', style: myNewFontButton),
               ),
               TextButton(
                 onPressed: () {
-                  _limpiarTablero();
+                  limpiarTablero();
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -289,7 +289,7 @@ class _MyHomePageState extends State<MyHomePage> {
     existeGanador = true;
   }
 
-  void _mostrarVentanaEmpate() {
+  void mostrarVentanaEmpate() {
     showDialog(
         barrierDismissible: false,
         //Bloquear el tap afuera de la caja de texto emergente.
@@ -301,14 +301,14 @@ class _MyHomePageState extends State<MyHomePage> {
             actions: <Widget>[
               TextButton(
                 onPressed: () {
-                  _limpiarTablero();
+                  limpiarTablero();
                   Navigator.of(context).pop(); //Regresar al board view
                 },
                 child: Text('¡Continuar jugando!', style: myNewFontButton),
               ),
               TextButton(
                 onPressed: () {
-                  _limpiarTablero();
+                  limpiarTablero();
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -324,7 +324,7 @@ class _MyHomePageState extends State<MyHomePage> {
     existeEmpate = true;
   }
 
-  void _limpiarTablero() {
+  void limpiarTablero() {
     setState(() {
       //De acuerdo al cambio de estado se re construye el build.
       for (var i = 0; i < 9; i++) {
@@ -346,7 +346,7 @@ class _MyHomePageState extends State<MyHomePage> {
             existeGanador == false) {
           mostrarEquisCirculo.celdas[move] = 'X';
           celdasLlenadas += 1;
-          _validarGanador(mostrarEquisCirculo);
+          validarGanador(mostrarEquisCirculo);
           //Cambia el turno existeBot
           turnoJugadorUno.estado = !turnoJugadorUno.estado;
           isPlayed = true;

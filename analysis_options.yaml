@@ -25,6 +25,7 @@ linter:
     - avoid_single_cascade_in_expression_statements
     - avoid_types_as_parameter_names
     - await_only_futures
+    - avoid_print
     - camel_case_extensions
     - curly_braces_in_flow_control_structures
     #- empty_catches
